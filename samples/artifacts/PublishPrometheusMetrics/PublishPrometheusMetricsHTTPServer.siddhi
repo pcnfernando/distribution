@@ -7,7 +7,7 @@ Purpose:
         This application demonstrates how to use siddhi-io-prometheus for publishing events through http server.
 
 Prerequisites:
-    1) The following steps must be executed to enable WSO2 SP to publish events to Prometheus
+    1) The following steps must be executed to enable Siddhi Distribution to publish events to Prometheus
         a) Download Prometheus server 'prometheus-2.5.0' from here : https://prometheus.io/download/#prometheus
 	   And extract the file in a preferred location.
 	    b) Open the prometheus.yml file from {prometheus} directory and add the following text under "scrape_configs:"
@@ -25,7 +25,7 @@ Prerequisites:
                  * simpleclient-0.5.0.jar
 		         * simpleclient_httpserver-0.5.0.jar
 	    d) Navigate to {prometheus} and start prometheus server using ' ./prometheus --config.file="prometheus.yml" ' command
-    2) Start the editor WSO2 SP by giving this command in the terminal : sh editor.sh
+    2) Start the editor Siddhi Distribution by giving this command in the terminal : sh editor.sh
     3) Save this sample
 
 Executing the Sample:

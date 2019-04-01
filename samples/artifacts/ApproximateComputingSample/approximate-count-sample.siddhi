@@ -4,8 +4,8 @@ Purpose:
     This application demonstrates how to calculate the approximate count(frequency) of eventS within a Siddhi window.
 
 Prerequisites:
-    1) Copy {SiddhiDistributionHome}/samples/artifacts/ApproximateComputingSample/Test-approximate-count.json file to {WSO2_SP_Home}/wso2/editor/deployment/simulation-configs
-    2) Copy {SiddhiDistributionHome}/samples/artifacts/ApproximateComputingSample/approximate-count.csv file to {WSO2_SP_Home}/wso2/editor/deployment/csv-files.
+    1) Copy {SiddhiDistributionHome}/samples/artifacts/ApproximateComputingSample/Test-approximate-count.json file to {SiddhiDistributionHome}/wso2/editor/deployment/simulation-configs
+    2) Copy {SiddhiDistributionHome}/samples/artifacts/ApproximateComputingSample/approximate-count.csv file to {SiddhiDistributionHome}/wso2/editor/deployment/csv-files.
 
 Executing the Sample:
     1) Save this sample. Provide name as 'approximate-count-sample'.

@@ -14,10 +14,10 @@ Purpose:
 
 Prerequisites:
     1) Ensure that MySQL is installed on your machine.
-    2) Add the MySQL JDBC driver into {WSO2_SP_HOME}/lib as follows:
+    2) Add the MySQL JDBC driver into {SiddhiDistributionHome}/lib as follows:
            a) Download the JDBC driver from: https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.45.tar.gz
            b) Unzip the archive.
-           c) Copy mysql-connector-java-5.1.45-bin.jar to {WSO2_SP_Home}/lib directory.
+           c) Copy mysql-connector-java-5.1.45-bin.jar to {SiddhiDistributionHome}/lib directory.
     3) Create a database named 'production' in MySQL. This database is referred to with the 'jdbc:mysql://localhost:3306/production' url.
     4) Create a table named 'SweetProductionTable': CREATE TABLE SweetProductionTable (name VARCHAR(20),amount double(10,2));
     5) Insert some values into the table: INSERT INTO SweetProductionTable VALUES ('Sugar',23.50); 
@@ -44,7 +44,7 @@ Testing the Sample:
     Notes:
     - After a change in the store, you can use the search stream to see whether the operation is successful.
     - The Primary Key constraint in SweetProductionTable is disabled, because the name cannot be used as a PrimaryKey in a ProductionTable.
-    - You can use Siddhi functions to create a unique ID for the received events, which can then be used to apply the Primary Key constraint on the data store records. (http://wso2.github.io/siddhi/documentation/siddhi-4.0/#function)
+    - You can use Siddhi functions to create a unique ID for the received events, which can then be used to apply the Primary Key constraint on the data store records. (https://siddhi-io.github.io/siddhi/documentation/siddhi-4.0/)
 
 Viewing the Results:
     See the output for raw materials on the console. You can use searchSweetProductionStream to check for inserted, deleted, and updated events.

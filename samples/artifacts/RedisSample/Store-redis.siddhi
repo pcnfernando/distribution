@@ -30,7 +30,7 @@ Testing the Sample:
     3) Likewise the events can be sent to the other corresponding streams to add, delete, update, insert, search events.
     4) After a change in the store, using the search stream the developer can see whether the operation is successful.
     5) Primary Key constraint SweetProductionTable is disabled, since name cannot be used as a PrimaryKey in ProductionTable.
-       Siddhi functions can be used to create a unique id for the received events which can then be used to apply Primary Key constraint on the data store records. (http://wso2.github.io/siddhi/documentation/siddhi-4.0/#function)
+       Siddhi functions can be used to create a unique id for the received events which can then be used to apply Primary Key constraint on the data store records. (https://siddhi-io.github.io/siddhi/documentation/siddhi-4.0/)
 
 Viewing the Results:
     See the output for row materials on the console. Inserted, deleted, updated events can be checked by searchSweetProductionStream.

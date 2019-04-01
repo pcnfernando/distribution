@@ -6,7 +6,7 @@ Purpose:
 	This application demonstrates how to configure Siddhi Distribution to Publish and receive data events processed within Siddhi to files in CSV custom format.
     
 Prerequisites:
-    * Edit the uri '{SiddhiDistributionHome}/samples/artifacts/CSVMappingWithFile/new/example.csv' by replacing {SiddhiDistributionHome} with the absolute path of your WSO2SP home directory. You can also change the path for 'file.uri' in the sink, if you want to publish your event file to a different location.
+    * Edit the uri '{SiddhiDistributionHome}/samples/artifacts/CSVMappingWithFile/new/example.csv' by replacing {SiddhiDistributionHome} with the absolute path of your Siddhi Distribution home directory. You can also change the path for 'file.uri' in the sink, if you want to publish your event file to a different location.
 
 	* Save this sample. If there is no syntax error, the following messages would be shown on the console:
 	     * - CSVCustomMapping.siddhi successfully deployed.
@@ -17,7 +17,7 @@ Executing & testing the Sample:
             * CSVCustomMapping.siddhi - Started Successfully!
 
 Viewing the Results:
-   	Source takes input from the {WSO2SP-HOME}/samples/artifacts/CSVMappingWithFile/new/example.csv and produces the event.
+   	Source takes input from the {SiddhiDistributionHome}/samples/artifacts/CSVMappingWithFile/new/example.csv and produces the event.
 	example.csv has data in below format 
 			1,WSO2,23.5
 			2,IBM,2.5

@@ -6,7 +6,7 @@ Purpose:
 
 Prerequisites:
 
-    1) Add relevant siddhi-io-email and siddhi-map-xml jars to the {WSO2Home}/lib folder if not exist.
+    1) Add relevant siddhi-io-email and siddhi-map-xml jars to the {SiddhiDistributionHome}/lib folder if not exist.
 
     --------------    Working with the Siddhi editor   ------------------------
 

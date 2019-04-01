@@ -1,6 +1,6 @@
 Purpose of this sample is to test the functionality of sentiment extension in SP 4.0.0
 
-1. Copy {SiddhiDistributionHome}/samples/artifacts/0032/sentimentExtensionSample.siddhi file to {WSO2_SP_Home}/wso2/worker/deployment/siddhi-files/
+1. Copy {SiddhiDistributionHome}/samples/artifacts/0032/sentimentExtensionSample.siddhi file to {SiddhiDistributionHome}/wso2/worker/deployment/siddhi-files/
 
 2. Start the worker using ./{SiddhiDistributionHome}/bin/worker.sh
 
@@ -35,6 +35,6 @@ curl -X POST \
   ]
 }'
 
-4. See the output in the WSO2SP terminal
+4. See the output in the Siddhi Distribution terminal
 
 NOTE: User credentials used in the curl commands are default values.

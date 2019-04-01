@@ -12,7 +12,7 @@ Prerequisites:
 
 Executing the Sample:
 
-    1) Copy csv-files and simulation-configs folder in {ProductHome}/samples/artifacts/MessageTracer folder to {ProductHome}/wso2/editor/deployment folder
+    1) Copy csv-files and simulation-configs folder in {SiddhiDistributionHome}/samples/artifacts/MessageTracer folder to {SiddhiDistributionHome}/wso2/editor/deployment folder
 
     2) Start the Siddhi application by clicking on 'Run'
 
