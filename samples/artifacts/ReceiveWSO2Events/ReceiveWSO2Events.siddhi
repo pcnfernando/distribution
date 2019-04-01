@@ -6,9 +6,9 @@ Purpose:
 
 Prerequisites:
 
-    1) Add relevant siddhi-io-wso2event and siddhi-map-wso2event jars to the {WSO2SPHome}/lib folder if not exist
+    1) Add relevant siddhi-io-wso2event and siddhi-map-wso2event jars to the {SiddhiDistributionHome}/lib folder if not exist
 
-    2) Navigate to {WSO2SPHome}/samples/sample-clients/wso2event-server and run ant command without arguments
+    2) Navigate to {SiddhiDistributionHome}/samples/sample-clients/wso2event-server and run ant command without arguments
 
     --------------    Working with the Siddhi editor   ------------------------
 
@@ -23,7 +23,7 @@ Executing the Sample:
     If you edit this application while it's running, stop the application -> Save -> Start.
     * Stop this Siddhi application (Click 'Run' on menu bar -> 'Stop')
 
-    3) Navigate to {WSO2SPHome}/samples/sample-clients/wso2event-client and run ant command as follows
+    3) Navigate to {SiddhiDistributionHome}/samples/sample-clients/wso2event-client and run ant command as follows
         * ant -Dport=7614
 
     4) Processed output events will be logged in the editor console.

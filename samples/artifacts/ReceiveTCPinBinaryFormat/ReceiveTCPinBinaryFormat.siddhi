@@ -4,7 +4,7 @@
 
 /*
 Purpose:
-    This application demonstrates how to configure WSO2 Stream Processor to receive events to the SweetProductionStream via TCP transport in binary default format and log the events in LowProductionAlertStream to the output console.
+    This application demonstrates how to configure Siddhi Distribution to receive events to the SweetProductionStream via TCP transport in binary default format and log the events in LowProductionAlertStream to the output console.
 
 Prerequisites:
     1) Save this sample
@@ -16,7 +16,7 @@ Executing the Sample:
         * ReceiveTCPinBinaryFormat.siddhi - Started Successfully!
 
 Testing the Sample:
-    1) Navigate to {WSO2SPHome}/samples/sample-clients/tcp-client and run "ant" command as follows:
+    1) Navigate to {SiddhiDistributionHome}/samples/sample-clients/tcp-client and run "ant" command as follows:
         Run "ant" command in the terminal as follows:
             ant -Dtype=binary
         If you want to publish custom number of events, you need to run "ant" command as follows
@@ -29,11 +29,11 @@ Notes:
         * Start the application and check whether the specified messages appear on the console
 
 Viewing the Results:
-    [2017-12-11 15:55:12,682]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - ReceiveTCPinBinaryFormat : LowProductionAlertStream : Event{timestamp=1512987912665, data=[Cupcake, 10.550546580727683], isExpired=false}
-    [2017-12-11 15:55:13,671]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - ReceiveTCPinBinaryFormat : LowProductionAlertStream : Event{timestamp=1512987913669, data=[Donut, 98.45360926759642], isExpired=false}
-    [2017-12-11 15:55:14,672]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - ReceiveTCPinBinaryFormat : LowProductionAlertStream : Event{timestamp=1512987914670, data=[Eclair, 48.77465755572478], isExpired=false}
-    [2017-12-11 15:55:15,672]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - ReceiveTCPinBinaryFormat : LowProductionAlertStream : Event{timestamp=1512987915671, data=[Froyo, 28.209321491656706], isExpired=false}
-    [2017-12-11 15:55:16,673]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - ReceiveTCPinBinaryFormat : LowProductionAlertStream : Event{timestamp=1512987916671, data=[Gingerbread, 110.46772110205492], isExpired=false}
+    [2017-12-11 15:55:12,682]  INFO {io.siddhi.siddhi.core.stream.output.sink.LogSink} - ReceiveTCPinBinaryFormat : LowProductionAlertStream : Event{timestamp=1512987912665, data=[Cupcake, 10.550546580727683], isExpired=false}
+    [2017-12-11 15:55:13,671]  INFO {io.siddhi.siddhi.core.stream.output.sink.LogSink} - ReceiveTCPinBinaryFormat : LowProductionAlertStream : Event{timestamp=1512987913669, data=[Donut, 98.45360926759642], isExpired=false}
+    [2017-12-11 15:55:14,672]  INFO {io.siddhi.siddhi.core.stream.output.sink.LogSink} - ReceiveTCPinBinaryFormat : LowProductionAlertStream : Event{timestamp=1512987914670, data=[Eclair, 48.77465755572478], isExpired=false}
+    [2017-12-11 15:55:15,672]  INFO {io.siddhi.siddhi.core.stream.output.sink.LogSink} - ReceiveTCPinBinaryFormat : LowProductionAlertStream : Event{timestamp=1512987915671, data=[Froyo, 28.209321491656706], isExpired=false}
+    [2017-12-11 15:55:16,673]  INFO {io.siddhi.siddhi.core.stream.output.sink.LogSink} - ReceiveTCPinBinaryFormat : LowProductionAlertStream : Event{timestamp=1512987916671, data=[Gingerbread, 110.46772110205492], isExpired=false}
 
 */
 

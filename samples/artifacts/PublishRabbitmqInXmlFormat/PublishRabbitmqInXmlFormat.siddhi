@@ -2,7 +2,7 @@
 
 /*
 Purpose:
-    This application demonstrates how to configure WSO2 Stream Processor to send sweet production events via RabbitMQ transport in XML format, and view the output on the rabbitmq-consumer.
+    This application demonstrates how to configure Siddhi Distribution to send sweet production events via RabbitMQ transport in XML format, and view the output on the rabbitmq-consumer.
 
 Prerequisites:
     1) Save this sample. The following message appears on the console.
@@ -19,7 +19,7 @@ Prerequisites:
             * invoke-rc.d rabbitmq-server start
 
 Executing the Sample:
-    1) Open a terminal and navigate to the {WSO2SPHome}/samples/sample-clients/rabbitmq-consumer directory and run the 'ant' command.
+    1) Open a terminal and navigate to the {SiddhiDistributionHome}/samples/sample-clients/rabbitmq-consumer directory and run the 'ant' command.
             * If you use the default exchange 'RABBITMQSAMPLE' and URI 'amqp://guest:guest@localhost:5672' in your program use 'ant' command without any arguments.
             * However, if you use different exchange names or URIs, run the 'ant' command with appropriate arguments.
              e.g., ant -Dexchange=rabbitMqtest
@@ -39,15 +39,15 @@ Testing the Sample:
 
 
 Viewing the Results:
-   *See the output in the terminal of {WSO2SPHome}/samples/sample-clients/rabbitmq-consumer. You will get the output as follows:
+   *See the output in the terminal of {SiddhiDistributionHome}/samples/sample-clients/rabbitmq-consumer. You will get the output as follows:
 (sample output for 4 events)
 
         [java] [org.apache.axiom.om.util.StAXUtils] : XMLStreamReader is org.apache.axiom.util.stax.dialect.SJSXPStreamReaderWrapper
-        [java] [org.wso2.siddhi.core.stream.output.sink.LogSink] : PublishRabbitmqInXmlFormatTest : logStream : Event{timestamp=1512448790922, data=[toffee, 9.78], isExpired=false}
+        [java] [io.siddhi.siddhi.core.stream.output.sink.LogSink] : PublishRabbitmqInXmlFormatTest : logStream : Event{timestamp=1512448790922, data=[toffee, 9.78], isExpired=false}
         [java] [org.apache.axiom.om.util.StAXUtils] : XMLStreamReader is org.apache.axiom.util.stax.dialect.SJSXPStreamReaderWrapper
-        [java] [org.wso2.siddhi.core.stream.output.sink.LogSink] : PublishRabbitmqInXmlFormatTest : logStream : Event{timestamp=1512448813975, data=[lollipop, 12.6], isExpired=false}
+        [java] [io.siddhi.siddhi.core.stream.output.sink.LogSink] : PublishRabbitmqInXmlFormatTest : logStream : Event{timestamp=1512448813975, data=[lollipop, 12.6], isExpired=false}
         [java] [org.apache.axiom.om.util.StAXUtils] : XMLStreamReader is org.apache.axiom.util.stax.dialect.SJSXPStreamReaderWrapper
-        [java] [org.wso2.siddhi.core.stream.output.sink.LogSink] : PublishRabbitmqInXmlFormatTest : logStream : Event{timestamp=1512448830488, data=[Pop, 72.6], isExpired=false}
+        [java] [io.siddhi.siddhi.core.stream.output.sink.LogSink] : PublishRabbitmqInXmlFormatTest : logStream : Event{timestamp=1512448830488, data=[Pop, 72.6], isExpired=false}
 
           
     Notes:

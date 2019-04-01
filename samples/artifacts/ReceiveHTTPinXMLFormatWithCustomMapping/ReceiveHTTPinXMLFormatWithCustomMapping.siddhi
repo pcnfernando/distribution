@@ -2,7 +2,7 @@
 
 @App:description('Receive events via HTTP transport in XML format with custom mapping and view the output on the console.')
 /*purpose
-     This application demonstrates how to configure WSO2 Stream Processor to receive events to the SweetProductionStream via HTTP transport in XML custom format and log the  events in LowProductionAlertStream to the output console.
+     This application demonstrates how to configure Siddhi Distribution to receive events to the SweetProductionStream via HTTP transport in XML custom format and log the  events in LowProductionAlertStream to the output console.
 
 Prerequisites:
     1) Save this sample
@@ -16,7 +16,7 @@ Executing the Sample:
 
 Testing the Sample:
     Option1: Publish events with http sample client:
-    1) Navigate to {WSO2SPHome}/samples/sample-clients/http-client and run "ant" command as follows:
+    1) Navigate to {SiddhiDistributionHome}/samples/sample-clients/http-client and run "ant" command as follows:
         Run "ant" command in the terminal  as follows:
             ant -Dtype=xml -DcustomMapping=true
         If you want to publish custom number of events, you need to run "ant" command as follows
