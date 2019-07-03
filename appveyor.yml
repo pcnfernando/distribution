@@ -27,7 +27,6 @@ environment:
 init:
   - git config --system core.longpaths true
 install:
-  - docker -H 0.0.0.0:2375
   - ps: |
       Add-Type -AssemblyName System.IO.Compression.FileSystem
       if (!(Test-Path -Path "C:\maven" )) {
