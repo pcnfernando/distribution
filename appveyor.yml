@@ -42,6 +42,7 @@ install:
   - cmd: java -version
   - cmd: node --version
   - cmd: npm --version
+  - cmd: sc config docker binpath= "\"C:\Program Files\docker\dockerd.exe\" --run-service -H tcp://0.0.0.0:2375"
 build_script:
   - SET MAVEN_OPTS="-Xms1024m"
   - mvn clean install -B -V
