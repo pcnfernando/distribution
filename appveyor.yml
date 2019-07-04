@@ -41,8 +41,18 @@ install:
   - cmd: java -version
   - cmd: node --version
   - cmd: npm --version
-  - cmd: sc config docker binpath= "\"C:\Program Files\docker\dockerd.exe\" --run-service -H tcp://0.0.0.0:2375 --tlsverify false"
-  - cmd: docker info
+  - ps: Invoke-WebRequest -UseBasicParsing -OutFile docker-18.09.7.zip https://download.docker.com/components/engine/windows-server/18.09/docker-18.09.7.zip
+  - ps: Stop-Service docker
+  - ps: Expand-Archive docker-18.09.7.zip -DestinationPath $Env:ProgramFiles -Force
+  - ps: Remove-Item -Force docker-18.09.7.zip
+  - ps: $null = Install-WindowsFeature containers
+  - ps: $env:path += ";$env:ProgramFiles\docker"
+  - ps: $newPath = "$env:ProgramFiles\docker;" + [Environment]::GetEnvironmentVariable("PATH",[EnvironmentVariableTarget]::Machine)
+  - ps: [Environment]::SetEnvironmentVariable("PATH", $newPath, [EnvironmentVariableTarget]::Machine)
+  - ps: dockerd --register-service
+  - ps: Start-Service docker
+#   - cmd: sc config docker binpath= "\"C:\Program Files\docker\dockerd.exe\" --run-service -H tcp://0.0.0.0:2375 --tlsverify false"
+#   - cmd: docker info
 build_script:
   - SET MAVEN_OPTS="-Xms1024m"
   - mvn clean install -B -V
