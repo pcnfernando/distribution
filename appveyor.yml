@@ -47,7 +47,6 @@ install:
   - ps: Remove-Item -Force docker-18.09.7.zip
   - ps: $null = Install-WindowsFeature containers
   - ps: $env:path += ";$env:ProgramFiles\docker"
-  - ps: $newPath = "$env:ProgramFiles\docker;" + [Environment]::GetEnvironmentVariable("PATH",[EnvironmentVariableTarget]::Machine) [Environment]::SetEnvironmentVariable("PATH", $newPath, [EnvironmentVariableTarget]::Machine)
   - ps: dockerd --register-service
   - ps: Start-Service docker
 #   - cmd: sc config docker binpath= "\"C:\Program Files\docker\dockerd.exe\" --run-service -H tcp://0.0.0.0:2375 --tlsverify false"
