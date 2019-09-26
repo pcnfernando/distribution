@@ -59,6 +59,7 @@
             <groupId>org.wso2.orbit.org.owasp.encoder</groupId>
             <artifactId>encoder</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>
