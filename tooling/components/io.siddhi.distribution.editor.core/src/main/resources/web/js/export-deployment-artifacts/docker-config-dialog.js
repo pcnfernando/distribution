@@ -41,12 +41,13 @@ define(['require', 'lodash', 'jquery'],
 
         DockerConfigDialog.prototype.getDockerConfigs = function () {
             var self = this;
-            var templateKeyValue = {};
-            templateKeyValue["imageName"] = self.container.find("#docker-img-name-input-field").val();
-            templateKeyValue["username"] = self.container.find("#username").val();
-            templateKeyValue["password"] = self.container.find("#password").val();
-            templateKeyValue["email"] = self.container.find("#email").val();
-            console.log(templateKeyValue);
+                var templateKeyValue = {};
+                templateKeyValue["imageName"] = self.container.find("#docker-img-name-input-field").val();
+                templateKeyValue["userName"] = self.container.find("#userName").val();
+                templateKeyValue["password"] = self.container.find("#password").val();
+                templateKeyValue["email"] = self.container.find("#email").val();
+                templateKeyValue["downloadDocker"] = self.container.find("#download-docker-artifacts").is(":checked");
+                templateKeyValue["pushDocker"] = self.container.find("#docker-push-checkbox").is(":checked");
             return templateKeyValue;
         };
 
