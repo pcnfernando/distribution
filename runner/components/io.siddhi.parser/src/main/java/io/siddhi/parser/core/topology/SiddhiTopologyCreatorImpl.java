@@ -356,13 +356,9 @@ public class SiddhiTopologyCreatorImpl implements SiddhiTopologyCreator {
             queryContextEndIndex = aggregationDefinition.getQueryContextEndIndex();
             streamDataHolder.setStreamDefinition(ExceptionUtil.getContext(queryContextStartIndex,
                     queryContextEndIndex, siddhiTopologyDataHolder.getUserDefinedSiddhiApp()));
-            String outputStreamId = aggregationDefinition.getBasicSingleInputStream().getStreamId();
             streamDataHolder.setEventHolderType(EventHolder.AGGREGATION);
             if (!siddhiTopologyDataHolder.getInMemoryMap().containsKey(streamId)) {
                 siddhiTopologyDataHolder.getInMemoryMap().put(streamId, groupName);
-            }
-            if (!siddhiTopologyDataHolder.getInMemoryMap().containsKey(outputStreamId)) {
-                siddhiTopologyDataHolder.getInMemoryMap().put(outputStreamId, groupName);
             }
             //if stream definition is an inferred definition
         } else if (streamDataHolder.getStreamDefinition() == null) {
