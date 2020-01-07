@@ -62,7 +62,7 @@
             <fileMode>644</fileMode>
         </fileSet>
         <fileSet>
-            <directory>../../resources/carbon-home/bin</directory>
+            <directory>../../resources/carbon-home/bin/runner</directory>
             <outputDirectory>bin</outputDirectory>
             <includes>
                 <include>runner.sh</include>
@@ -71,7 +71,7 @@
             <fileMode>755</fileMode>
         </fileSet>
         <fileSet>
-            <directory>../../resources/carbon-home/bin</directory>
+            <directory>../../resources/carbon-home/bin/runner</directory>
             <outputDirectory>bin</outputDirectory>
             <includes>
                 <include>**/*.txt</include>
@@ -140,7 +140,7 @@
             <fileMode>444</fileMode>
         </file>
         <file>
-            <source>../resources/carbon-home/bin/version.txt</source>
+            <source>../resources/carbon-home/bin/runner/version.txt</source>
             <outputDirectory>bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>

@@ -923,7 +923,7 @@
         </plugins>
         <resources>
             <resource>
-                <directory>../resources/carbon-home/bin/</directory>
+                <directory>../resources/carbon-home/bin/runner/</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>**/version.txt</include>
