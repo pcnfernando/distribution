@@ -18,6 +18,7 @@ package io.siddhi.parser.service;
 import io.siddhi.core.SiddhiAppRuntime;
 import io.siddhi.core.SiddhiManager;
 import io.siddhi.core.stream.ServiceDeploymentInfo;
+import io.siddhi.core.stream.input.InputHandler;
 import io.siddhi.core.stream.input.source.Source;
 import io.siddhi.distribution.common.common.SiddhiAppRuntimeService;
 import io.siddhi.distribution.common.common.utils.config.FileConfigManager;

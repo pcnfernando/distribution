@@ -42,7 +42,7 @@ public class OutputStreamDataHolder {
         this.streamDefinition = streamDefinition;
         this.eventHolderType = eventHolderType;
         this.isUserGiven = isUserGiven;
-        this.publishingStrategyList = new ArrayList();
+        this.publishingStrategyList = new ArrayList<>();
         isInnerGroupStream = false;
         isSinkBridgeAdded = false;
     }
@@ -84,7 +84,7 @@ public class OutputStreamDataHolder {
     }
 
     public boolean isSinkBridgeAdded() {
-        return isSinkBridgeAdded;
+        return isSinkBridgeAdded ;
     }
 
     public void setSinkBridgeAdded(boolean sinkBridgeAdded) {

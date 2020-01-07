@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * Distributed Topology of a user defined distributed Siddhi App. Topology contains all the required details for the
- * underlying distribution provider to create new Apps.
+ * underlying distribution provider to create new Apps and deploy them on available resources.
  */
 public class SiddhiTopology {
     private String name;

@@ -17,11 +17,14 @@
  */
 package io.siddhi.parser.core.appcreator;
 
+import io.siddhi.parser.SiddhiParserDataHolder;
 import io.siddhi.parser.core.topology.InputStreamDataHolder;
 import io.siddhi.parser.core.topology.OutputStreamDataHolder;
 import io.siddhi.parser.core.topology.PublishingStrategyDataHolder;
 import io.siddhi.parser.core.topology.SiddhiQueryGroup;
+import io.siddhi.parser.core.topology.SiddhiTopology;
 import io.siddhi.parser.core.topology.SubscriptionStrategyDataHolder;
+import io.siddhi.parser.core.util.ResourceManagerConstants;
 import io.siddhi.parser.core.util.TransportStrategy;
 import io.siddhi.parser.service.model.MessagingSystem;
 import org.apache.commons.lang3.StringUtils;
@@ -37,8 +40,6 @@ import java.util.Map;
  * Creates distributed siddhi application which can be distributed using Nats-streaming.
  */
 public class NatsSiddhiAppCreator extends AbstractSiddhiAppCreator {
-
-    private static final Logger log = Logger.getLogger(NatsSiddhiAppCreator.class);
     //App creator constants
     public static final String APP_NAME = "appName";
     public static final String TOPIC_LIST = "topicList";
@@ -48,7 +49,7 @@ public class NatsSiddhiAppCreator extends AbstractSiddhiAppCreator {
     public static final String PARTITION_KEY = "partitionKey";
     public static final String DESTINATIONS = "destinations";
     public static final String PARTITION_NO = "partitionNo";
-    public static final String MAPPING = "text";
+    public static final String MAPPING = "json";
     public static final String PARTITION_TOPIC = "partitionTopic";
     public static final String DESTINATION_TOPIC = "@destination(destination = '${"
             + PARTITION_TOPIC + "}')";
@@ -74,8 +75,9 @@ public class NatsSiddhiAppCreator extends AbstractSiddhiAppCreator {
             + "destination = '${" + TOPIC_LIST + "}', bootstrap.servers="
             + "'${" + NATS_SERVER_URL + "}',@map(type='" + MAPPING + "'))";
 
-    private String clusterId = "";
-    private String natsServerUrl = "";
+    private static final Logger log = Logger.getLogger(NatsSiddhiAppCreator.class);
+    private String clusterId;
+    private String natsServerUrl;
 
     @Override
     protected List<SiddhiQuery> createApps(String siddhiAppName, SiddhiQueryGroup queryGroup,
@@ -91,7 +93,7 @@ public class NatsSiddhiAppCreator extends AbstractSiddhiAppCreator {
         processInputStreams(siddhiAppName, groupName, queryList, queryGroup.getInputStreams().values());
         processOutputStreams(siddhiAppName, queryList, queryGroup.getOutputStreams().values());
         if (log.isDebugEnabled()) {
-            log.debug("Following parse list is created for the Siddhi Query Group " + queryGroup.getName() + " "
+            log.debug("Following query list is created for the Siddhi Query Group " + queryGroup.getName() + " "
                     + "representing Siddhi App " + siddhiAppName + ".");
             for (SiddhiQuery siddhiQuery : queryList) {
                 log.debug(siddhiQuery.getApp());
@@ -101,31 +103,27 @@ public class NatsSiddhiAppCreator extends AbstractSiddhiAppCreator {
     }
 
     /**
+     *
      * @param siddhiAppName Name of the initial user defined siddhi application.
-     * @param queryList     Contains the parse of the current execution group replicated
+     * @param queryList     Contains the query of the current execution group replicated
      *                      to the parallelism of the group.
      * @param outputStreams Collection of current execution group's output streams
-     *                      Assigns the nats sink configurations for output streams.
+     * Assigns the nats sink configurations for output streams.
      */
     private void processOutputStreams(String siddhiAppName, List<SiddhiQuery> queryList,
                                       Collection<OutputStreamDataHolder> outputStreams) {
-
-        Map<String, String> sinkValuesMap = new HashMap();
-        sinkValuesMap.put(CLUSTER_ID, clusterId);
-        sinkValuesMap.put(NATS_SERVER_URL, natsServerUrl);
+        Map<String, String> sinkValuesMap = new HashMap<>();
+        sinkValuesMap.put(ResourceManagerConstants.CLUSTER_ID, clusterId);
+        sinkValuesMap.put(ResourceManagerConstants.NATS_SERVER_URL, natsServerUrl);
 
         for (OutputStreamDataHolder outputStream : outputStreams) {
-            Map<String, String> sinkList = new HashMap();
-            Map<String, Integer> partitionKeys = new HashMap();
+            Map<String, String> sinkList = new HashMap<>();
+            Map<String, Integer> partitionKeys = new HashMap<>();
 
             for (PublishingStrategyDataHolder holder : outputStream.getPublishingStrategyList()) {
-                if (outputStream.getInmemoryTopicName() != null) {
-                    sinkValuesMap.put(TOPIC_LIST, outputStream.getInmemoryTopicName());
-                } else {
-                    sinkValuesMap.put(TOPIC_LIST, siddhiAppName + "_" +
-                            outputStream.getStreamName() + (holder.getGroupingField() == null ? "" : ("_" + holder
-                            .getGroupingField())));
-                }
+                sinkValuesMap.put(ResourceManagerConstants.TOPIC_LIST, siddhiAppName + "_" +
+                        outputStream.getStreamName() + (holder.getGroupingField() == null ? "" : ("_" + holder
+                        .getGroupingField())));
                 if (holder.getStrategy() == TransportStrategy.FIELD_GROUPING) {
                     if (partitionKeys.get(holder.getGroupingField()) != null &&
                             partitionKeys.get(holder.getGroupingField()) > holder.getParallelism()) {
@@ -133,76 +131,77 @@ public class NatsSiddhiAppCreator extends AbstractSiddhiAppCreator {
                     }
 
                     partitionKeys.put(holder.getGroupingField(), holder.getParallelism());
-                    sinkValuesMap.put(PARTITION_KEY, holder.getGroupingField());
-                    List<String> destinations = new ArrayList(holder.getParallelism());
+                    sinkValuesMap.put(ResourceManagerConstants.PARTITION_KEY, holder.getGroupingField());
+                    List<String> destinations = new ArrayList<>(holder.getParallelism());
 
                     for (int i = 0; i < holder.getParallelism(); i++) {
-                        Map<String, String> destinationMap = new HashMap(holder.getParallelism());
-                        destinationMap.put(PARTITION_TOPIC,
-                                sinkValuesMap.get(TOPIC_LIST)
+                        Map<String, String> destinationMap = new HashMap<>(holder.getParallelism());
+                        destinationMap.put(ResourceManagerConstants.PARTITION_TOPIC,
+                                sinkValuesMap.get(ResourceManagerConstants.TOPIC_LIST)
                                         + "_" + String.valueOf(i));
-                        destinations.add(getUpdatedQuery(DESTINATION_TOPIC,
+                        destinations.add(getUpdatedQuery(ResourceManagerConstants.DESTINATION_TOPIC,
                                 destinationMap));
                     }
 
-                    sinkValuesMap.put(DESTINATIONS,
+                    sinkValuesMap.put(ResourceManagerConstants.DESTINATIONS,
                             StringUtils.join(destinations, ","));
                     String sinkString =
-                            getUpdatedQuery(PARTITIONED_NATS_SINK_TEMPLATE,
+                            getUpdatedQuery(ResourceManagerConstants.PARTITIONED_NATS_SINK_TEMPLATE,
                                     sinkValuesMap);
-                    sinkList.put(sinkValuesMap.get(TOPIC_LIST),
+                    sinkList.put(sinkValuesMap.get(ResourceManagerConstants.TOPIC_LIST),
                             sinkString);
                 } else {
                     //ATM we are handling both strategies in same manner. Later will improve to have multiple
                     // partitions for RR
-                    String sinkString = getUpdatedQuery(DEFAULT_NATS_SINK_TEMPLATE,
-                            sinkValuesMap);
-                    sinkList.put(sinkValuesMap.get(TOPIC_LIST), sinkString);
+                    String sinkString = getUpdatedQuery(ResourceManagerConstants.DEFAULT_NATS_SINK_TEMPLATE,
+                                sinkValuesMap);
+                    sinkList.put(sinkValuesMap.get(ResourceManagerConstants.TOPIC_LIST), sinkString);
                 }
             }
-            Map<String, String> queryValuesMap = new HashMap(1);
+            Map<String, String> queryValuesMap = new HashMap<>(1);
             queryValuesMap.put(outputStream.getStreamName(), StringUtils.join(sinkList.values(), "\n"));
             updateQueryList(queryList, queryValuesMap);
         }
     }
 
     /**
+     *
      * @param siddhiAppName Name of the initial user defined siddhi application.
-     * @param queryList     Contains the parse of the current execution group replicated
+     * @param queryList     Contains the query of the current execution group replicated
      *                      to the parallelism of the group.
      * @param inputStreams  Collection of current execution group's input streams
-     *                      Assigns the nats source configurations for input streams.
+     * Assigns the nats source configurations for input streams.
      */
     private void processInputStreams(String siddhiAppName, String groupName, List<SiddhiQuery> queryList,
                                      Collection<InputStreamDataHolder> inputStreams) {
-
-        Map<String, String> sourceValuesMap = new HashMap();
+        Map<String, String> sourceValuesMap = new HashMap<>();
         for (InputStreamDataHolder inputStream : inputStreams) {
             SubscriptionStrategyDataHolder subscriptionStrategy = inputStream.getSubscriptionStrategy();
-            sourceValuesMap.put(CLUSTER_ID, clusterId);
-            sourceValuesMap.put(NATS_SERVER_URL, natsServerUrl);
+            sourceValuesMap.put(ResourceManagerConstants.CLUSTER_ID, clusterId);
+            sourceValuesMap.put(ResourceManagerConstants.NATS_SERVER_URL, natsServerUrl);
 
             if (!inputStream.isUserGiven()) {
                 if (subscriptionStrategy.getStrategy() == TransportStrategy.FIELD_GROUPING) {
-                    sourceValuesMap.put(TOPIC_LIST, getTopicName(siddhiAppName,
+                    sourceValuesMap.put(ResourceManagerConstants.TOPIC_LIST, getTopicName(siddhiAppName,
                             inputStream.getStreamName(), inputStream.getSubscriptionStrategy().getPartitionKey()));
                     for (int i = 0; i < queryList.size(); i++) {
-                        List<String> sourceQueries = new ArrayList();
+                        List<String> sourceQueries = new ArrayList<>();
                         List<Integer> partitionNumbers = getPartitionNumbers(queryList.size(), subscriptionStrategy
-                                .getOfferedParallelism(), i);
+                                        .getOfferedParallelism(), i);
                         for (int topicCount : partitionNumbers) {
                             String topicName = getTopicName(siddhiAppName, inputStream.getStreamName(),
                                     inputStream.getSubscriptionStrategy().getPartitionKey()) + "_"
                                     + Integer.toString(topicCount);
 
-                            sourceValuesMap.put(TOPIC_LIST, topicName);
-                            String sourceQuery = getUpdatedQuery(DEFAULT_NATS_SOURCE_TEMPLATE, sourceValuesMap);
+                            sourceValuesMap.put(ResourceManagerConstants.TOPIC_LIST, topicName);
+                            String sourceQuery = getUpdatedQuery(ResourceManagerConstants
+                                    .DEFAULT_NATS_SOURCE_TEMPLATE, sourceValuesMap);
                             sourceQueries.add(sourceQuery);
                         }
 
                         String combinedQueryHeader = StringUtils.join(sourceQueries,
                                 System.lineSeparator());
-                        Map<String, String> queryValuesMap = new HashMap(1);
+                        Map<String, String> queryValuesMap = new HashMap<>(1);
                         queryValuesMap.put(inputStream.getStreamName(), combinedQueryHeader);
                         String updatedQuery = getUpdatedQuery(queryList.get(i).getApp()
                                 , queryValuesMap);
@@ -210,24 +209,23 @@ public class NatsSiddhiAppCreator extends AbstractSiddhiAppCreator {
                     }
 
                 } else if (subscriptionStrategy.getStrategy() == TransportStrategy.ROUND_ROBIN) {
-                    sourceValuesMap.put(TOPIC_LIST, getTopicName(siddhiAppName,
+                    sourceValuesMap.put(ResourceManagerConstants.TOPIC_LIST, getTopicName(siddhiAppName,
                             inputStream.getStreamName(), null));
-                    sourceValuesMap.put(QUEUE_GROUP_NAME, groupName);
-                    String sourceString = getUpdatedQuery(RR_NATS_SOURCE_TEMPLATE, sourceValuesMap);
-                    Map<String, String> queryValuesMap = new HashMap(1);
+                    sourceValuesMap.put(ResourceManagerConstants.QUEUE_GROUP_NAME, groupName);
+                    String sourceString = getUpdatedQuery(ResourceManagerConstants
+                            .RR_NATS_SOURCE_TEMPLATE, sourceValuesMap);
+                    Map<String, String> queryValuesMap = new HashMap<>(1);
                     queryValuesMap.put(inputStream.getStreamName(), sourceString);
                     updateQueryList(queryList, queryValuesMap);
 
                 } else if (subscriptionStrategy.getStrategy() == TransportStrategy.ALL) {
-                    if (inputStream.getInMemoryTopic() != null) {
-                        sourceValuesMap.put(TOPIC_LIST, inputStream.getInMemoryTopic());
-                    } else {
-                        sourceValuesMap.put(TOPIC_LIST, getTopicName(siddhiAppName,
-                                inputStream.getStreamName(), null));
-                    }
+
+                    sourceValuesMap.put(ResourceManagerConstants.TOPIC_LIST, getTopicName(siddhiAppName,
+                            inputStream.getStreamName(), null));
                     for (SiddhiQuery aQueryList : queryList) {
-                        String sourceString = getUpdatedQuery(DEFAULT_NATS_SOURCE_TEMPLATE, sourceValuesMap);
-                        Map<String, String> queryValuesMap = new HashMap(1);
+                        String sourceString = getUpdatedQuery(ResourceManagerConstants
+                                .DEFAULT_NATS_SOURCE_TEMPLATE, sourceValuesMap);
+                        Map<String, String> queryValuesMap = new HashMap<>(1);
                         queryValuesMap.put(inputStream.getStreamName(), sourceString);
                         String updatedQuery = getUpdatedQuery(aQueryList.getApp(), queryValuesMap);
                         aQueryList.setApp(updatedQuery);

@@ -35,6 +35,7 @@ public class StreamDataHolder {
         this.isUserGiven = isUserGiven;
     }
 
+
     public StreamDataHolder(boolean isUserGiven) {
         this.isUserGiven = isUserGiven;
     }

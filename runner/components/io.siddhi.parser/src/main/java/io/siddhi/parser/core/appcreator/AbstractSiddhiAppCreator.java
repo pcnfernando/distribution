@@ -21,6 +21,7 @@ package io.siddhi.parser.core.appcreator;
 import io.siddhi.parser.core.SiddhiAppCreator;
 import io.siddhi.parser.core.topology.SiddhiQueryGroup;
 import io.siddhi.parser.core.topology.SiddhiTopology;
+import io.siddhi.parser.core.util.ResourceManagerConstants;
 import io.siddhi.parser.service.model.MessagingSystem;
 import org.apache.commons.lang3.text.StrSubstitutor;
 
@@ -34,14 +35,15 @@ import java.util.Map;
  * to implement custom Siddhi App Creator based on the distribute implementation.
  */
 public abstract class AbstractSiddhiAppCreator implements SiddhiAppCreator {
+    protected boolean transportChannelCreationEnabled;
 
     public List<DeployableSiddhiQueryGroup> createApps(SiddhiTopology topology, MessagingSystem messagingSystem) {
         List<DeployableSiddhiQueryGroup> deployableSiddhiQueryGroupList =
-                new ArrayList(topology.getQueryGroupList().size());
+                new ArrayList<>(topology.getQueryGroupList().size());
         for (SiddhiQueryGroup queryGroup : topology.getQueryGroupList()) {
             DeployableSiddhiQueryGroup deployableQueryGroup =
                     new DeployableSiddhiQueryGroup(queryGroup.getName(),
-                            queryGroup.isReceiverQueryGroup(), /*queryGroup.isUserGivenSource(),*/
+                            queryGroup.isReceiverQueryGroup(),
                             queryGroup.getParallelism());
             deployableQueryGroup.setSiddhiQueries(createApps(topology.getName(), queryGroup, messagingSystem));
             deployableSiddhiQueryGroupList.add(deployableQueryGroup);
@@ -51,9 +53,9 @@ public abstract class AbstractSiddhiAppCreator implements SiddhiAppCreator {
 
     /**
      * This method should return valid concrete Siddhi App/s as Strings. No. of returned Siddhi
-     * Apps should equal the parallelism count for parse group.
+     * Apps should equal the parallelism count for query group.
      *
-     * @param queryGroup Input parse group to produce Siddhi Apps.
+     * @param queryGroup Input query group to produce Siddhi Apps.
      * @return List of valid concrete Siddhi Apps as String.
      */
     protected abstract List<SiddhiQuery> createApps(String siddhiAppName,
@@ -61,7 +63,7 @@ public abstract class AbstractSiddhiAppCreator implements SiddhiAppCreator {
 
     protected List<Integer> getPartitionNumbers(int appParallelism, int availablePartitionCount,
                                                 int currentAppNum) {
-        List<Integer> partitionNumbers = new ArrayList();
+        List<Integer> partitionNumbers = new ArrayList<>();
         if (availablePartitionCount == appParallelism) {
             partitionNumbers.add(currentAppNum);
             return partitionNumbers;
@@ -88,11 +90,14 @@ public abstract class AbstractSiddhiAppCreator implements SiddhiAppCreator {
 
     protected List<SiddhiQuery> generateQueryList(String queryTemplate, String queryGroupName,
                                                   int parallelism) {
-        List<SiddhiQuery> queries = new ArrayList(parallelism);
+        List<SiddhiQuery> queries = new ArrayList<>(parallelism);
         for (int i = 0; i < parallelism; i++) {
-            Map<String, String> valuesMap = new HashMap(1);
-            String appName = queryGroupName + "-" + (i + 1);
-            valuesMap.put("appName", appName);
+            Map<String, String> valuesMap = new HashMap<>(1);
+            String appName = queryGroupName;
+            if (parallelism > 1) {
+                appName = appName + "-" + (i + 1);
+            }
+            valuesMap.put(ResourceManagerConstants.APP_NAME, appName);
             StrSubstitutor substitutor = new StrSubstitutor(valuesMap);
             queries.add(new SiddhiQuery(appName, substitutor.replace(queryTemplate),
                     false));

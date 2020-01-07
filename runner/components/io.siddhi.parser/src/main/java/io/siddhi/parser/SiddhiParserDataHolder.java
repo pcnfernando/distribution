@@ -18,11 +18,22 @@
 package io.siddhi.parser;
 
 import io.siddhi.core.SiddhiManager;
+import io.siddhi.parser.service.model.MessagingSystem;
 import org.wso2.carbon.config.provider.ConfigProvider;
 
 public class SiddhiParserDataHolder {
     private static ConfigProvider configFileReader;
     private static SiddhiManager siddhiManager;
+
+    public static MessagingSystem getMessagingSystem() {
+        return messagingSystem;
+    }
+
+    public static void setMessagingSystem(MessagingSystem messagingSystem) {
+        SiddhiParserDataHolder.messagingSystem = messagingSystem;
+    }
+
+    private static MessagingSystem messagingSystem;
 
     public static SiddhiManager getSiddhiManager() {
         return siddhiManager;

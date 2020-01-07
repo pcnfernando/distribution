@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * POJO Class to hold created Siddhi Apps belonging to a single parse group.
+ * POJO Class to hold created Siddhi Apps belonging to a single query group.
  */
 public class DeployableSiddhiQueryGroup {
 
@@ -34,7 +34,7 @@ public class DeployableSiddhiQueryGroup {
 
     public DeployableSiddhiQueryGroup(String groupName, boolean receiverQueryGroup, int parallelism) {
         this.groupName = groupName;
-        siddhiQueries = new ArrayList();
+        siddhiQueries = new ArrayList<>();
         isReceiverQueryGroup = receiverQueryGroup;
         this.parallelism = parallelism;
     }

@@ -79,15 +79,15 @@ public class InputStreamDataHolder {
         isInnerGroupStream = innerGroupStream;
     }
 
-    public boolean isUserGivenSource() {
+    public boolean isUserGivenSource(){
         return streamDefinition.toLowerCase().contains(SiddhiTopologyCreatorConstants.SOURCE_IDENTIFIER);
-    }
-
-    public void setInMemoryTopic(String inMemoryTopic) {
-        this.inMemoryTopic = inMemoryTopic;
     }
 
     public String getInMemoryTopic() {
         return inMemoryTopic;
+    }
+
+    public void setInMemoryTopic(String inMemoryTopic) {
+        this.inMemoryTopic = inMemoryTopic;
     }
 }

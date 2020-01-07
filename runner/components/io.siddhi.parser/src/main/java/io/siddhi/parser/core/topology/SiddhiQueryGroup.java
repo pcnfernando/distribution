@@ -17,15 +17,15 @@
  */
 package io.siddhi.parser.core.topology;
 
+import io.siddhi.parser.core.util.ResourceManagerConstants;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.siddhi.parser.core.appcreator.NatsSiddhiAppCreator.APP_NAME;
-
 /**
- * Data Holder to hold required details of Query Groups in {@link SiddhiTopology}.
+ * Data Holder to hold required details of Query Groups in {@link SiddhiTopology}
  */
 public class SiddhiQueryGroup {
     private String name;
@@ -33,22 +33,19 @@ public class SiddhiQueryGroup {
     private String siddhiApp;
     private Map<String, InputStreamDataHolder> inputStreams;
     private Map<String, OutputStreamDataHolder> outputStreams;
-    private boolean messagingSourceAvailable = false;
     private List<String> queryList;
     private boolean isReceiverQueryGroup;
+    private boolean isStateful = false;
+    private boolean messagingSourceAvailable = false;
 
     public SiddhiQueryGroup(String name, int parallelism) {
         this.name = name;
         this.parallelism = parallelism;
-        this.queryList = new ArrayList();
+        this.queryList = new ArrayList<>();
         siddhiApp = " ";
-        inputStreams = new HashMap();
-        outputStreams = new HashMap();
+        inputStreams = new HashMap<>();
+        outputStreams = new HashMap<>();
 
-    }
-
-    public List<String> getQueryList() {
-        return queryList;
     }
 
     public String getName() {
@@ -65,22 +62,27 @@ public class SiddhiQueryGroup {
 
     public String getSiddhiApp() {
         //combination of InputStream definitions , OutputStream and queries
-        StringBuilder stringBuilder = new StringBuilder("@App:name(\"${" + APP_NAME + "}\") \n");
+        StringBuilder stringBuilder = new StringBuilder("@App:name('${" + ResourceManagerConstants.APP_NAME + "}') \n");
+
         for (InputStreamDataHolder inputStreamDataHolder : inputStreams.values()) {
+
             siddhiApp = inputStreamDataHolder.getStreamDefinition();
             if (siddhiApp != null) {
                 stringBuilder.append(siddhiApp).append(";\n");
             }
         }
+
         for (OutputStreamDataHolder outputStreamDataHolder : outputStreams.values()) {
             siddhiApp = outputStreamDataHolder.getStreamDefinition();
             if (siddhiApp != null) {
                 stringBuilder.append(siddhiApp).append(";\n");
             }
         }
+
         for (String aQueryList : queryList) {
             stringBuilder.append(aQueryList).append(";\n");
         }
+
         siddhiApp = stringBuilder.toString();
         return stringBuilder.toString();
     }
@@ -89,8 +91,8 @@ public class SiddhiQueryGroup {
         queryList.add(query);
     }
 
-    public void addQueryAtFirst(String query) {
-        queryList.add(0, query);
+    public void addQueryAtFirst(String query){
+        queryList.add(0,query);
     }
 
     public void addOutputStream(String key, OutputStreamDataHolder outputStreamDataHolder) {
@@ -103,6 +105,7 @@ public class SiddhiQueryGroup {
         if (inputStreamDataHolderMap != null) {
             this.inputStreams.putAll(inputStreamDataHolderMap);
         }
+
     }
 
     public Map<String, InputStreamDataHolder> getInputStreams() {
@@ -125,6 +128,10 @@ public class SiddhiQueryGroup {
         this.parallelism = parallelism;
     }
 
+    public List<String> getQueryList() {
+        return queryList;
+    }
+
     public boolean isMessagingSourceAvailable() {
         return messagingSourceAvailable;
     }
@@ -133,4 +140,11 @@ public class SiddhiQueryGroup {
         this.messagingSourceAvailable = messagingSourceAvailable;
     }
 
+    public boolean isStateful() {
+        return isStateful;
+    }
+
+    public void setStateful(boolean stateful) {
+        isStateful = stateful;
+    }
 }
