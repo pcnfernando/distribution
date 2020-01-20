@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.siddhi.parser.core.topology;
+package io.siddhi.parser.core.topology.models;
 
 import io.siddhi.parser.core.util.ResourceManagerConstants;
 

@@ -18,7 +18,6 @@
 
 package io.siddhi.parser;
 
-
 import io.siddhi.core.SiddhiAppRuntime;
 import io.siddhi.core.SiddhiManager;
 import io.siddhi.core.event.Event;
@@ -28,13 +27,12 @@ import io.siddhi.core.util.EventPrinter;
 import io.siddhi.core.util.SiddhiTestHelper;
 import io.siddhi.core.util.transport.InMemoryBroker;
 import io.siddhi.extension.io.http.source.HttpSource;
-import io.siddhi.extension.io.nats.source.NATSSource;
 import io.siddhi.extension.map.json.sourcemapper.JsonSourceMapper;
 import io.siddhi.parser.core.SiddhiAppCreator;
-import io.siddhi.parser.core.appcreator.DeployableSiddhiQueryGroup;
+import io.siddhi.parser.core.appcreator.models.DeployableSiddhiQueryGroup;
 import io.siddhi.parser.core.appcreator.NatsSiddhiAppCreator;
-import io.siddhi.parser.core.appcreator.SiddhiQuery;
-import io.siddhi.parser.core.topology.SiddhiTopology;
+import io.siddhi.parser.core.appcreator.models.SiddhiQuery;
+import io.siddhi.parser.core.topology.models.SiddhiTopology;
 import io.siddhi.parser.core.topology.SiddhiTopologyCreatorImpl;
 import io.siddhi.parser.core.util.SiddhiTopologyCreatorConstants;
 import io.siddhi.parser.core.util.TransportStrategy;
@@ -60,7 +58,7 @@ public class NatsAppCreatorTestCase {
 
     private static final Logger log = Logger.getLogger(NatsAppCreatorTestCase.class);
     private static final String CLUSTER_ID = "test-cluster";
-    private static String NATS_SERVER_URL = "nats://localhost:4222";
+    private static String NATS_SERVER_URL = "nats://localhost:";
     private AtomicInteger count;
     private int port;
     private AtomicInteger errorAssertionCount;
@@ -77,7 +75,7 @@ public class NatsAppCreatorTestCase {
         SiddhiManager siddhiManager = new SiddhiManager();
         siddhiManager.setExtension("http-source", HttpSource.class);
         siddhiManager.setExtension("map-json", JsonSourceMapper.class);
-        siddhiManager.setExtension("nats-source", NATSSource.class);
+//        siddhiManager.setExtension("nats-source", NatsSource.class);
         SiddhiParserDataHolder.setSiddhiManager(siddhiManager);
         GenericContainer simpleWebServer
                 = new GenericContainer("nats-streaming:0.11.2");
@@ -316,10 +314,10 @@ public class NatsAppCreatorTestCase {
                     }
                 });
             }
-            tempStreamHandler.send(new Object[]{1, 110, 80});
-            tempStreamHandler.send(new Object[]{1, 120, 60});
-            tempStreamHandler.send(new Object[]{1, 140, 70});
-            tempStreamHandler.send(new Object[]{1, 140, 30});
+            tempStreamHandler.send(new Object[]{1, 110, 80d});
+            tempStreamHandler.send(new Object[]{1, 120, 60d});
+            tempStreamHandler.send(new Object[]{1, 140, 70d});
+            tempStreamHandler.send(new Object[]{1, 140, 30d});
 
             SiddhiTestHelper.waitForEvents(100, 3, count, 2000);
             Assert.assertEquals(count.intValue(), 3);
@@ -335,15 +333,17 @@ public class NatsAppCreatorTestCase {
      * (Partitioned/Inner) Stream.
      */
     @Test
-    //(dependsOnMethods = "testFilterQuery")
+            //(dependsOnMethods = "testFilterQuery")
     public void testPartitionWithWindow() {
         String siddhiApp = "@App:name('TestPlan3')"
                 + "define stream TempStream(deviceID long, roomNo int, temp double); "
-                + "@info(name = 'query1') @dist(parallel ='1', execGroup='group1')\n "
+                + "@info(name = 'query1') "
+                + "@dist(parallel ='1', execGroup='group1')\n "
                 + "from TempStream\n"
                 + "select *\n"
                 + "insert into TempInternalStream;"
-                + "@info(name = 'query2') @dist(parallel ='2', execGroup='group2')\n "
+                + "@info(name = 'query2') "
+                + "@dist(parallel ='2', execGroup='group2')\n "
                 + "partition with ( deviceID of TempInternalStream )\n"
                 + "begin\n"
                 + "    from TempInternalStream#window.lengthBatch(2)\n"
@@ -353,7 +353,7 @@ public class NatsAppCreatorTestCase {
 
         SiddhiTopologyCreatorImpl siddhiTopologyCreator = new SiddhiTopologyCreatorImpl();
         SiddhiTopology topology = siddhiTopologyCreator.createTopology(siddhiApp);
-        Assert.assertEquals(topology.getQueryGroupList().get(1).getInputStreams()
+        Assert.assertEquals(topology.getQueryGroupList().get(0).getInputStreams()
                 .get("TempInternalStream").getSubscriptionStrategy()
                 .getStrategy(), TransportStrategy.FIELD_GROUPING);
         SiddhiAppCreator appCreator = new NatsSiddhiAppCreator();
@@ -368,8 +368,6 @@ public class NatsAppCreatorTestCase {
                 runtime.addCallback("DeviceTempStream", new StreamCallback() {
                     @Override
                     public void receive(Event[] events) {
-
-                        System.out.println(runtime.getName());
                         EventPrinter.print(events);
                         count.addAndGet(events.length);
                         for (Event event : events) {

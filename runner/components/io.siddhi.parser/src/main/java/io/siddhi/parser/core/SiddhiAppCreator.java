@@ -19,8 +19,8 @@
 package io.siddhi.parser.core;
 
 
-import io.siddhi.parser.core.appcreator.DeployableSiddhiQueryGroup;
-import io.siddhi.parser.core.topology.SiddhiTopology;
+import io.siddhi.parser.core.appcreator.models.DeployableSiddhiQueryGroup;
+import io.siddhi.parser.core.topology.models.SiddhiTopology;
 import io.siddhi.parser.service.model.MessagingSystem;
 
 import java.util.List;

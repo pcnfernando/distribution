@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package io.siddhi.parser.core.appcreator;
+package io.siddhi.parser.core.appcreator.models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,6 @@ import java.util.List;
  * POJO Class to hold created Siddhi Apps belonging to a single query group.
  */
 public class DeployableSiddhiQueryGroup {
-
     private String groupName;
     private List<SiddhiQuery> siddhiQueries;
     private boolean isReceiverQueryGroup;

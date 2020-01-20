@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package io.siddhi.parser.core.topology;
+package io.siddhi.parser.core.topology.models;
 
 import java.util.List;
 

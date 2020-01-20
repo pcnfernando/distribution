@@ -18,6 +18,8 @@
 
 package io.siddhi.parser.core.topology;
 
+import io.siddhi.parser.core.topology.models.SubscriptionStrategyDataHolder;
+
 import java.io.Serializable;
 import java.util.Comparator;
 

@@ -18,7 +18,7 @@
 
 package io.siddhi.parser.core;
 
-import io.siddhi.parser.core.topology.SiddhiTopology;
+import io.siddhi.parser.core.topology.models.SiddhiTopology;
 
 /**
  * Topology Creator will consume a Siddhi App and produce a {@link SiddhiTopology} based on distributed annotations.

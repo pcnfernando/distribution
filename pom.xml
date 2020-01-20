@@ -1184,8 +1184,8 @@
     </dependencyManagement>
 
     <properties>
-        <siddhi.version>5.1.11</siddhi.version>
-        <siddhi.bundle.version>5.1.11</siddhi.bundle.version>
+        <siddhi.version>5.1.12-SNAPSHOT</siddhi.version>
+        <siddhi.bundle.version>5.1.12-SNAPSHOT</siddhi.bundle.version>
         <siddhi.version.range>[5.0.0, 6.0.0)</siddhi.version.range>
         <carbon.analytics-common.version>6.1.36</carbon.analytics-common.version>
         <carbon.analytics-common.version.range>[6.1.0, 6.2.0)</carbon.analytics-common.version.range>
@@ -1317,7 +1317,7 @@
         <siddhi.io.jms.version>2.0.3</siddhi.io.jms.version>
         <siddhi.io.cdc.version>2.0.5</siddhi.io.cdc.version>
         <siddhi.io.prometheus.version>2.1.1</siddhi.io.prometheus.version>
-        <siddhi.io.nats.version>2.0.10</siddhi.io.nats.version>
+        <siddhi.io.nats.version>2.0.11</siddhi.io.nats.version>
         <siddhi.io.grpc.version>1.0.8</siddhi.io.grpc.version>
         <siddhi.io.rabbitmq.version>3.0.4</siddhi.io.rabbitmq.version>
 

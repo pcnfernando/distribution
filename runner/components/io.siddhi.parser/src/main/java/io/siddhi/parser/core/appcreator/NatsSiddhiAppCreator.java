@@ -17,13 +17,13 @@
  */
 package io.siddhi.parser.core.appcreator;
 
-import io.siddhi.parser.SiddhiParserDataHolder;
-import io.siddhi.parser.core.topology.InputStreamDataHolder;
-import io.siddhi.parser.core.topology.OutputStreamDataHolder;
-import io.siddhi.parser.core.topology.PublishingStrategyDataHolder;
-import io.siddhi.parser.core.topology.SiddhiQueryGroup;
-import io.siddhi.parser.core.topology.SiddhiTopology;
-import io.siddhi.parser.core.topology.SubscriptionStrategyDataHolder;
+import io.siddhi.parser.core.appcreator.models.AbstractSiddhiAppCreator;
+import io.siddhi.parser.core.appcreator.models.SiddhiQuery;
+import io.siddhi.parser.core.topology.models.InputStreamDataHolder;
+import io.siddhi.parser.core.topology.models.OutputStreamDataHolder;
+import io.siddhi.parser.core.topology.models.PublishingStrategyDataHolder;
+import io.siddhi.parser.core.topology.models.SiddhiQueryGroup;
+import io.siddhi.parser.core.topology.models.SubscriptionStrategyDataHolder;
 import io.siddhi.parser.core.util.ResourceManagerConstants;
 import io.siddhi.parser.core.util.TransportStrategy;
 import io.siddhi.parser.service.model.MessagingSystem;
@@ -84,13 +84,19 @@ public class NatsSiddhiAppCreator extends AbstractSiddhiAppCreator {
                                            MessagingSystem messagingSystem) {
         String groupName = queryGroup.getName();
         String queryTemplate = queryGroup.getSiddhiApp();
-        List<SiddhiQuery> queryList = generateQueryList(queryTemplate, groupName, queryGroup
-                .getParallelism());
+        List<SiddhiQuery> queryList;
+        if (queryGroup.isStateful()) {
+            queryList = generateQueryList(queryTemplate, groupName, queryGroup
+                    .getParallelism());
+        } else {
+            queryList = generateQueryList(queryTemplate, groupName, 1);
+        }
         if (messagingSystem != null && messagingSystem.getConfig() != null) {
             natsServerUrl = messagingSystem.getConfig().getBootstrapServerURLs();
             clusterId = messagingSystem.getConfig().getClusterId();
         }
-        processInputStreams(siddhiAppName, groupName, queryList, queryGroup.getInputStreams().values());
+        processInputStreams(siddhiAppName, groupName, queryList, queryGroup.getInputStreams().values(),
+                queryGroup.isStateful());
         processOutputStreams(siddhiAppName, queryList, queryGroup.getOutputStreams().values());
         if (log.isDebugEnabled()) {
             log.debug("Following query list is created for the Siddhi Query Group " + queryGroup.getName() + " "
@@ -173,7 +179,7 @@ public class NatsSiddhiAppCreator extends AbstractSiddhiAppCreator {
      * Assigns the nats source configurations for input streams.
      */
     private void processInputStreams(String siddhiAppName, String groupName, List<SiddhiQuery> queryList,
-                                     Collection<InputStreamDataHolder> inputStreams) {
+                                     Collection<InputStreamDataHolder> inputStreams, boolean isStateful) {
         Map<String, String> sourceValuesMap = new HashMap<>();
         for (InputStreamDataHolder inputStream : inputStreams) {
             SubscriptionStrategyDataHolder subscriptionStrategy = inputStream.getSubscriptionStrategy();
@@ -211,15 +217,20 @@ public class NatsSiddhiAppCreator extends AbstractSiddhiAppCreator {
                 } else if (subscriptionStrategy.getStrategy() == TransportStrategy.ROUND_ROBIN) {
                     sourceValuesMap.put(ResourceManagerConstants.TOPIC_LIST, getTopicName(siddhiAppName,
                             inputStream.getStreamName(), null));
-                    sourceValuesMap.put(ResourceManagerConstants.QUEUE_GROUP_NAME, groupName);
-                    String sourceString = getUpdatedQuery(ResourceManagerConstants
-                            .RR_NATS_SOURCE_TEMPLATE, sourceValuesMap);
+                    String sourceString;
+                    if (isStateful) {
+                        sourceValuesMap.put(ResourceManagerConstants.QUEUE_GROUP_NAME, groupName);
+                        sourceString = getUpdatedQuery(ResourceManagerConstants
+                                .RR_NATS_SOURCE_TEMPLATE, sourceValuesMap);
+                    } else {
+                        sourceValuesMap.put(ResourceManagerConstants.DURABLE_NAME, groupName);
+                        sourceString = getUpdatedQuery(ResourceManagerConstants
+                                .DURABLE_NATS_SOURCE_TEMPLATE, sourceValuesMap);
+                    }
                     Map<String, String> queryValuesMap = new HashMap<>(1);
                     queryValuesMap.put(inputStream.getStreamName(), sourceString);
                     updateQueryList(queryList, queryValuesMap);
-
                 } else if (subscriptionStrategy.getStrategy() == TransportStrategy.ALL) {
-
                     sourceValuesMap.put(ResourceManagerConstants.TOPIC_LIST, getTopicName(siddhiAppName,
                             inputStream.getStreamName(), null));
                     for (SiddhiQuery aQueryList : queryList) {

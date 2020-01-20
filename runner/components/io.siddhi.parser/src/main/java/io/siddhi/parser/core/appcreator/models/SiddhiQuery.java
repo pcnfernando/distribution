@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package io.siddhi.parser.core.appcreator;
+package io.siddhi.parser.core.appcreator.models;
 
 /**
  * Gives details about siddhi application.

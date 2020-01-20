@@ -19,8 +19,18 @@
 package io.siddhi.parser.core.topology;
 
 import io.siddhi.core.SiddhiAppRuntime;
+import io.siddhi.core.partition.PartitionRuntime;
+import io.siddhi.core.query.QueryRuntime;
 import io.siddhi.parser.SiddhiParserDataHolder;
 import io.siddhi.parser.core.SiddhiTopologyCreator;
+import io.siddhi.parser.core.topology.models.InputStreamDataHolder;
+import io.siddhi.parser.core.topology.models.OutputStreamDataHolder;
+import io.siddhi.parser.core.topology.models.PublishingStrategyDataHolder;
+import io.siddhi.parser.core.topology.models.SiddhiQueryGroup;
+import io.siddhi.parser.core.topology.models.SiddhiTopology;
+import io.siddhi.parser.core.topology.models.SiddhiTopologyDataHolder;
+import io.siddhi.parser.core.topology.models.StreamDataHolder;
+import io.siddhi.parser.core.topology.models.SubscriptionStrategyDataHolder;
 import io.siddhi.parser.core.util.EventHolder;
 import io.siddhi.parser.core.util.SiddhiTopologyCreatorConstants;
 import io.siddhi.parser.core.util.TransportStrategy;
@@ -48,7 +58,6 @@ import io.siddhi.query.api.util.ExceptionUtil;
 import io.siddhi.query.compiler.SiddhiCompiler;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.apache.log4j.Logger;
-
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,6 +87,7 @@ public class SiddhiTopologyCreatorImpl implements SiddhiTopologyCreator {
     private Map<String, Set<ExecutionElement>> inMemoryAggregationJoins = new HashMap<>();
     private String userDefinedSiddhiApp;
     private SiddhiQueryGroup passThroughSiddhiQueryGroup;
+    private Map<Query, Boolean> queryMap = new HashMap<>();
 
     @Override
     public SiddhiTopology createTopology(String userDefinedSiddhiApp) {
@@ -92,15 +102,38 @@ public class SiddhiTopologyCreatorImpl implements SiddhiTopologyCreator {
         String defaultExecGroupName = siddhiAppName + "-" + UUID.randomUUID();
         boolean transportChannelCreationEnabled = isTransportChannelCreationEnabled(siddhiApp.getAnnotations());
         Set<String> inMemoryAggregationIds = getInmemoryAggregationIds();
-        for (ExecutionElement executionElement : siddhiApp.getExecutionElementList()) {
-            parallel = getExecGroupParallel(executionElement);
-            if (inMemoryAggregationIds.size() > 0 && isJoinWithInMemoryAggregation(executionElement,
+
+//        for (PartitionRuntime partitionRuntime : siddhiAppRuntime.getPartitions()) {
+//            for (QueryRuntime queryRuntime : partitionRuntime.getQueries()) {
+//                queryMap.put(queryRuntime.getQuery(), queryRuntime.isStateful());
+//            }
+//        }
+//        for (QueryRuntime queryRuntime : siddhiAppRuntime.getQueries()) {
+//            queryMap.put(queryRuntime.getQuery(), queryRuntime.isStateful());
+//        }
+        for (PartitionRuntime partitionRuntime : siddhiAppRuntime.getPartitions()) {
+            parallel = getExecGroupParallel(partitionRuntime.getPartition());
+            if (inMemoryAggregationIds.size() > 0 && isJoinWithInMemoryAggregation(partitionRuntime.getPartition(),
                     inMemoryAggregationIds)) {
                 continue;
             }
-            execGroupName = getExecGroupName(executionElement, siddhiAppName, defaultExecGroupName);
+            execGroupName = getExecGroupName(partitionRuntime.getPartition(), siddhiAppName, defaultExecGroupName);
             siddhiQueryGroup = createSiddhiQueryGroup(execGroupName, parallel);
-            addExecutionElement(executionElement, siddhiQueryGroup, execGroupName);
+            for (QueryRuntime queryRuntime : partitionRuntime.getQueries()) {
+                siddhiQueryGroup.setStateful(queryRuntime.isStateful());
+            }
+            addExecutionElement(partitionRuntime.getPartition(), siddhiQueryGroup, execGroupName);
+        }
+        for (QueryRuntime queryRuntime : siddhiAppRuntime.getQueries()) {
+            parallel = getExecGroupParallel(queryRuntime.getQuery());
+            if (inMemoryAggregationIds.size() > 0 && isJoinWithInMemoryAggregation(queryRuntime.getQuery(),
+                    inMemoryAggregationIds)) {
+                continue;
+            }
+            execGroupName = getExecGroupName(queryRuntime.getQuery(), siddhiAppName, defaultExecGroupName);
+            siddhiQueryGroup = createSiddhiQueryGroup(execGroupName, parallel);
+            siddhiQueryGroup.setStateful(queryRuntime.isStateful());
+            addExecutionElement(queryRuntime.getQuery(), siddhiQueryGroup, execGroupName);
         }
 
         createAggregationQueryGroups(inMemoryAggregationIds.size());
@@ -300,8 +333,8 @@ public class SiddhiTopologyCreatorImpl implements SiddhiTopologyCreator {
             //not an inner Stream
             if (!inputStreamId.startsWith(SiddhiTopologyCreatorConstants.INNERSTREAM_IDENTIFIER)) {
                 streamDataHolder = extractStreamHolderInfo(inputStreamId, parallel, execGroupName);
-                TransportStrategy transportStrategy = findStreamSubscriptionStrategy(isQuery, inputStreamId, parallel,
-                        execGroupName);
+                TransportStrategy transportStrategy = findStreamSubscriptionStrategy(isQuery,
+                        siddhiQueryGroup.isStateful(), inputStreamId, parallel, execGroupName);
 
                 InputStreamDataHolder inputStreamDataHolder = siddhiQueryGroup.getInputStreams().get(inputStreamId);
                 //conflicting strategies for an stream in same in same execGroup
@@ -456,8 +489,8 @@ public class SiddhiTopologyCreatorImpl implements SiddhiTopologyCreator {
      *
      * @return {@link TransportStrategy}
      */
-    private TransportStrategy findStreamSubscriptionStrategy(boolean isQuery, String streamId, int parallel,
-                                                             String execGroup) {
+    private TransportStrategy findStreamSubscriptionStrategy(boolean isQuery, boolean isStateful, String streamId,
+                                                             int parallel, String execGroup) {
         if (parallel > SiddhiTopologyCreatorConstants.DEFAULT_PARALLEL) {
             //partitioned stream residing in partition/ partition + query of the same execGroup
             if (siddhiTopologyDataHolder.getPartitionGroupMap().containsKey(streamId) &&
@@ -683,6 +716,7 @@ public class SiddhiTopologyCreatorImpl implements SiddhiTopologyCreator {
                                                          String runtimeDefinition, int parallelism) {
         String passthroughExecGroupName = siddhiTopologyDataHolder.getSiddhiAppName() + "-" +
                 SiddhiTopologyCreatorConstants.PASSTHROUGH + "-" + new Random().nextInt(99999);
+        //todo check state
         SiddhiQueryGroup siddhiQueryGroup = new SiddhiQueryGroup(passthroughExecGroupName,
                 parallelism);
         String streamId = inputStreamDataHolder.getStreamName();
@@ -954,7 +988,8 @@ public class SiddhiTopologyCreatorImpl implements SiddhiTopologyCreator {
             siddhiQueryGroup.setParallelism(parallelism);
             SubscriptionStrategyDataHolder subscriptionStrategyDataHolder = new
                     SubscriptionStrategyDataHolder(parallelism, findStreamSubscriptionStrategy(false,
-                    aggregationId, parallelism, siddhiQueryGroup.getName()), null);
+                    siddhiQueryGroup.isStateful(), aggregationId, parallelism, siddhiQueryGroup.getName()),
+                    null);
             InputStreamDataHolder inputStreamDataHolder  = new InputStreamDataHolder(streamId,
                     streamDefinition, streamDataHolder.getEventHolderType(),
                     streamDataHolder.isUserGiven(),
@@ -993,17 +1028,17 @@ public class SiddhiTopologyCreatorImpl implements SiddhiTopologyCreator {
         int[] queryContextStartIndex;
         int parallelism = siddhiQueryGroup.getParallelism();
         if (executionElement instanceof Query) {
+            Query query = (Query) executionElement;
             //set query string
-            queryContextStartIndex = ((Query) executionElement).getQueryContextStartIndex();
-            queryContextEndIndex = ((Query) executionElement).getQueryContextEndIndex();
+            queryContextStartIndex = query.getQueryContextStartIndex();
+            queryContextEndIndex = query.getQueryContextEndIndex();
             siddhiQueryGroup.addQuery(removeMetaInfoQuery(executionElement, ExceptionUtil
                     .getContext(queryContextStartIndex, queryContextEndIndex, userDefinedSiddhiApp)));
-            siddhiQueryGroup.addInputStreams(getInputStreamHolderInfo((Query) executionElement,
+            siddhiQueryGroup.addInputStreams(getInputStreamHolderInfo(query,
                     siddhiQueryGroup, true));
-            String outputStreamId = ((Query) executionElement).getOutputStream().getId();
+            String outputStreamId = query.getOutputStream().getId();
             siddhiQueryGroup.addOutputStream(outputStreamId, getOutputStreamHolderInfo(outputStreamId, parallelism,
                             queryGroupName));
-
         } else if (executionElement instanceof Partition) {
             //set Partition string
             queryContextStartIndex = ((Partition) executionElement)
